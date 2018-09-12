@@ -7,9 +7,11 @@ Pearson Education, Inc.
 package nfa_test
 
 import (
+	"fmt"
+	"testing"
+
 	"github.com/paulgriffiths/gods/automata/nfa"
 	"github.com/paulgriffiths/gods/sets"
-	"testing"
 )
 
 // NFA from Introduction to the Theory of Computation, figure 1.34.
@@ -485,4 +487,92 @@ func TestNfa8(t *testing.T) {
 			t.Errorf("input %q, got %v, want %v", tc.input, r, tc.result)
 		}
 	}
+}
+
+// TODO: write acceptance tests
+func TestToDfa(t *testing.T) {
+	// From https://www.cs.odu.edu/~toida/nerzic/390teched/regular/fa/nfa-2-dfa.html
+	var n nfa.Nfa = nfa.Nfa{
+		4,
+		[]rune{'a', 'b'},
+		[]map[rune]sets.SetInt{
+			{'a': sets.NewSetInt(1, 2)}, // 0
+			{'a': sets.NewSetInt(1, 2)}, // 1
+			{'b': sets.NewSetInt(3, 1)}, // 2
+			{'a': sets.NewSetInt(1, 2)}, // 3
+		},
+		0,
+		sets.NewSetInt(0, 1),
+	}
+
+	fmt.Println(n.ToDfa())
+
+	// From http://web.cecs.pdx.edu/~harry/compilers/slides/LexicalPart3.pdf
+	n = nfa.Nfa{
+		11,
+		[]rune{'a', 'b'},
+		[]map[rune]sets.SetInt{
+			{0: sets.NewSetInt(1, 7)}, // 0
+			{0: sets.NewSetInt(2, 4)}, // 1
+			{'a': sets.NewSetInt(3)},  // 2
+			{0: sets.NewSetInt(6)},    // 3
+			{'b': sets.NewSetInt(5)},  // 4
+			{0: sets.NewSetInt(6)},    // 5
+			{0: sets.NewSetInt(7, 1)}, // 6
+			{'a': sets.NewSetInt(8)},  // 7
+			{'b': sets.NewSetInt(9)},  // 8
+			{'b': sets.NewSetInt(10)}, // 9
+			{}, // 10
+
+		},
+		0,
+		sets.NewSetInt(10),
+	}
+
+	fmt.Println(n.ToDfa())
+
+	// From https://www.geeksforgeeks.org/theory-of-computation-conversion-from-nfa-to-dfa/
+	n = nfa.Nfa{
+		3,
+		[]rune{'a', 'b'},
+		[]map[rune]sets.SetInt{
+			{ // 0
+				'a': sets.NewSetInt(0, 1),
+				'b': sets.NewSetInt(0),
+			},
+			{'b': sets.NewSetInt(2)}, // 1
+			{}, // 2
+		},
+		0,
+		sets.NewSetInt(2),
+	}
+
+	fmt.Println(n.ToDfa())
+
+	// From http://condor.depaul.edu/glancast/444class/docs/nfa2dfa.html
+	n = nfa.Nfa{
+		3,
+		[]rune{'a', 'b'},
+		[]map[rune]sets.SetInt{
+			{ // 0
+				0:   sets.NewSetInt(1),
+				'a': sets.NewSetInt(2),
+			},
+			{ // 1
+				'a': sets.NewSetInt(4, 3),
+			},
+			{ // 2
+				'b': sets.NewSetInt(3),
+			},
+			{ // 3
+				'a': sets.NewSetInt(4),
+				'b': sets.NewSetInt(4),
+			},
+			{}, // 4
+		},
+		0,
+		sets.NewSetInt(4),
+	}
+
+	fmt.Println(n.ToDfa())
 }
